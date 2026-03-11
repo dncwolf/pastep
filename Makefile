@@ -12,7 +12,6 @@ app: build
 	mkdir -p $(BUNDLE)/Contents/MacOS
 	cp $(BINARY) $(BUNDLE)/Contents/MacOS/$(APP_NAME)
 	cp Info.plist $(BUNDLE)/Contents/Info.plist
-	codesign --force --deep --sign "pastep-codesign" $(BUNDLE) 2>/dev/null || codesign --force --deep --sign - $(BUNDLE)
 	@echo "✓ $(BUNDLE) を作成しました"
 
 run: app
