@@ -16,18 +16,14 @@ class StatusBarController {
             button.image = NSImage(systemSymbolName: "doc.on.clipboard", accessibilityDescription: "Pastep")
         }
 
-        setupMenu()
+        let menu = NSMenu()
+        statusItem.menu = menu
+        refreshMenu()
 
         store.$entries
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in self?.refreshMenu() }
             .store(in: &cancellables)
-    }
-
-    private func setupMenu() {
-        let menu = NSMenu()
-        statusItem.menu = menu
-        refreshMenu()
     }
 
     func refreshMenu() {
@@ -59,23 +55,23 @@ class StatusBarController {
 
         let showItem = NSMenuItem(
             title: "履歴を表示... (⌘⇧V)",
-            action: #selector(showPanel),
+            action: #selector(togglePanel),
             keyEquivalent: ""
         )
         showItem.target = self
         menu.addItem(showItem)
 
-        let statusTitle = shortcutActive
-            ? "ショートカット: 有効"
-            : "ショートカット: 権限なし → クリックで設定を開く"
-        let statusItem = NSMenuItem(
-            title: statusTitle,
+        let accessibilityTitle = shortcutActive
+            ? "アクセシビリティ権限: 許可済み"
+            : "アクセシビリティ権限: 未許可 → クリックで設定を開く"
+        let accessibilityItem = NSMenuItem(
+            title: accessibilityTitle,
             action: shortcutActive ? nil : #selector(openAccessibilitySettings),
             keyEquivalent: ""
         )
-        statusItem.target = self
-        statusItem.isEnabled = !shortcutActive
-        menu.addItem(statusItem)
+        accessibilityItem.target = self
+        accessibilityItem.isEnabled = !shortcutActive
+        menu.addItem(accessibilityItem)
 
         let quitItem = NSMenuItem(
             title: "終了",
@@ -99,36 +95,15 @@ class StatusBarController {
         guard let entry = sender.representedObject as? ClipboardEntry else { return }
         setToPasteboard(entry: entry)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-            StatusBarController.performPaste()
+            performPaste()
         }
     }
 
-    private static func performPaste() {
-        let src = CGEventSource(stateID: .hidSystemState)
-        let down = CGEvent(keyboardEventSource: src, virtualKey: 0x09, keyDown: true)
-        down?.flags = .maskCommand
-        let up = CGEvent(keyboardEventSource: src, virtualKey: 0x09, keyDown: false)
-        up?.flags = .maskCommand
-        down?.post(tap: .cgAnnotatedSessionEventTap)
-        up?.post(tap: .cgAnnotatedSessionEventTap)
-    }
-
-    @objc private func showPanel() {
-        togglePanel()
-    }
-
-    func togglePanel() {
+    @objc func togglePanel() {
         if historyPanel == nil {
             historyPanel = HistoryPanel(store: store)
         }
-        let buttonFrame: NSRect
-        if let button = statusItem.button, let window = button.window {
-            let frameInWindow = button.convert(button.bounds, to: nil)
-            buttonFrame = window.convertToScreen(frameInWindow)
-        } else {
-            buttonFrame = .zero
-        }
-        historyPanel?.toggle(relativeTo: buttonFrame)
+        historyPanel?.toggle()
     }
 
     private func setToPasteboard(entry: ClipboardEntry) {

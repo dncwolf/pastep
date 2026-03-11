@@ -23,11 +23,9 @@ struct ClipboardEntry: Codable, Identifiable, Equatable {
     }
 
     var preview: String {
-        let normalized = content.replacingOccurrences(of: "\n", with: " ")
         if type == .filePath {
             return URL(fileURLWithPath: content).lastPathComponent
         }
-        let prefix = String(normalized.prefix(20))
-        return prefix
+        return String(content.replacingOccurrences(of: "\n", with: " ").prefix(20))
     }
 }

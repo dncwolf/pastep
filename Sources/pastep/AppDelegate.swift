@@ -10,8 +10,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         historyStore = HistoryStore()
         clipboardMonitor = ClipboardMonitor(store: historyStore)
         statusBarController = StatusBarController(store: historyStore)
-        globalShortcutManager = GlobalShortcutManager {
-            self.statusBarController.togglePanel()
+        globalShortcutManager = GlobalShortcutManager { [weak self] in
+            self?.statusBarController.togglePanel()
         }
         globalShortcutManager.onStatusChange = { [weak self] active in
             DispatchQueue.main.async {

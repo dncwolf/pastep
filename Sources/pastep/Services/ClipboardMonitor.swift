@@ -40,8 +40,4 @@ class ClipboardMonitor {
         }
     }
 
-    // アプリ自身がクリップボードにセットした後、再検知を防ぐ
-    func updateChangeCount() {
-        lastChangeCount = NSPasteboard.general.changeCount
-    }
 }
