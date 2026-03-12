@@ -1,16 +1,31 @@
 import AppKit
 import Foundation
 
-class ClipboardMonitor {
+public protocol PasteboardProtocol: AnyObject {
+    var changeCount: Int { get }
+    func string(forType dataType: NSPasteboard.PasteboardType) -> String?
+    func readObjects(forClasses classArray: [AnyClass], options: [NSPasteboard.ReadingOptionKey: Any]?) -> [Any]?
+}
+
+extension NSPasteboard: PasteboardProtocol {}
+
+public class ClipboardMonitor {
     private let store: HistoryStore
     private var timer: Timer?
-    private var lastChangeCount: Int = NSPasteboard.general.changeCount
+    private var lastChangeCount: Int
+    private let pasteboard: PasteboardProtocol
 
-    init(store: HistoryStore) {
-        self.store = store
+    public convenience init(store: HistoryStore) {
+        self.init(store: store, pasteboard: NSPasteboard.general)
     }
 
-    func start() {
+    init(store: HistoryStore, pasteboard: PasteboardProtocol) {
+        self.store = store
+        self.pasteboard = pasteboard
+        self.lastChangeCount = pasteboard.changeCount
+    }
+
+    public func start() {
         timer = Timer.scheduledTimer(
             withTimeInterval: 0.5,
             repeats: true
@@ -20,13 +35,12 @@ class ClipboardMonitor {
         RunLoop.main.add(timer!, forMode: .common)
     }
 
-    func stop() {
+    public func stop() {
         timer?.invalidate()
         timer = nil
     }
 
-    private func poll() {
-        let pasteboard = NSPasteboard.general
+    func poll() {
         guard pasteboard.changeCount != lastChangeCount else { return }
         lastChangeCount = pasteboard.changeCount
 
@@ -39,5 +53,4 @@ class ClipboardMonitor {
             store.add(entry)
         }
     }
-
 }

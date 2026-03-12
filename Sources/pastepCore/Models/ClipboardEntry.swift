@@ -1,28 +1,28 @@
 import Foundation
 
-enum EntryType: String, Codable {
+public enum EntryType: String, Codable {
     case text
     case filePath
 }
 
-struct ClipboardEntry: Codable, Identifiable, Equatable {
-    let id: UUID
-    let content: String
-    let type: EntryType
-    let createdAt: Date
+public struct ClipboardEntry: Codable, Identifiable, Equatable {
+    public let id: UUID
+    public let content: String
+    public let type: EntryType
+    public let createdAt: Date
 
-    init(content: String, type: EntryType) {
+    public init(content: String, type: EntryType) {
         self.id = UUID()
         self.content = content
         self.type = type
         self.createdAt = Date()
     }
 
-    static func == (lhs: ClipboardEntry, rhs: ClipboardEntry) -> Bool {
+    public static func == (lhs: ClipboardEntry, rhs: ClipboardEntry) -> Bool {
         lhs.content == rhs.content && lhs.type == rhs.type
     }
 
-    var preview: String {
+    public var preview: String {
         if type == .filePath {
             return URL(fileURLWithPath: content).lastPathComponent
         }

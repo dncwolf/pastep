@@ -7,9 +7,12 @@ let package = Package(
         .macOS(.v13)
     ],
     targets: [
-        .executableTarget(
-            name: "pastep",
-            path: "Sources/pastep"
+        .target(name: "pastepCore", path: "Sources/pastepCore"),
+        .executableTarget(name: "pastep", dependencies: ["pastepCore"], path: "Sources/pastep"),
+        .testTarget(
+            name: "pastepTests",
+            dependencies: ["pastepCore"],
+            path: "Tests/pastepTests"
         )
     ]
 )

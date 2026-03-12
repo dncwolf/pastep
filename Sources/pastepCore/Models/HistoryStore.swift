@@ -1,19 +1,25 @@
 import Foundation
 import Combine
 
-class HistoryStore: ObservableObject {
-    @Published var entries: [ClipboardEntry] = []
+public class HistoryStore: ObservableObject {
+    @Published public var entries: [ClipboardEntry] = []
 
     private let maxEntries = 20
     private let defaultsKey = "clipboard_history"
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
+    private let defaults: UserDefaults
 
-    init() {
+    public convenience init() {
+        self.init(defaults: .standard)
+    }
+
+    init(defaults: UserDefaults) {
+        self.defaults = defaults
         load()
     }
 
-    func add(_ entry: ClipboardEntry) {
+    public func add(_ entry: ClipboardEntry) {
         // 重複除去（同じ content + type のエントリを削除）
         entries.removeAll { $0 == entry }
         // 先頭に挿入
@@ -27,12 +33,12 @@ class HistoryStore: ObservableObject {
 
     private func save() {
         guard let data = try? encoder.encode(entries) else { return }
-        UserDefaults.standard.set(data, forKey: defaultsKey)
+        defaults.set(data, forKey: defaultsKey)
     }
 
     private func load() {
         guard
-            let data = UserDefaults.standard.data(forKey: defaultsKey),
+            let data = defaults.data(forKey: defaultsKey),
             let loaded = try? decoder.decode([ClipboardEntry].self, from: data)
         else { return }
         entries = loaded

@@ -1,19 +1,19 @@
 import AppKit
 import Carbon
 
-class GlobalShortcutManager {
+public class GlobalShortcutManager {
     private let action: () -> Void
-    var onStatusChange: ((Bool) -> Void)?
+    public var onStatusChange: ((Bool) -> Void)?
 
     private var eventTap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
     private var pollTimer: Timer?
 
-    init(action: @escaping () -> Void) {
+    public init(action: @escaping () -> Void) {
         self.action = action
     }
 
-    func start() {
+    public func start() {
         if AXIsProcessTrusted() {
             registerTap()
         } else {

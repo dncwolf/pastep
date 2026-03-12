@@ -1,14 +1,14 @@
 import AppKit
 import Combine
 
-class StatusBarController {
+public class StatusBarController {
     private let store: HistoryStore
     private let statusItem: NSStatusItem
     private var historyPanel: HistoryPanel?
     private var cancellables = Set<AnyCancellable>()
-    private(set) var shortcutActive: Bool = false
+    public private(set) var shortcutActive: Bool = false
 
-    init(store: HistoryStore) {
+    public init(store: HistoryStore) {
         self.store = store
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
 
@@ -26,7 +26,7 @@ class StatusBarController {
             .store(in: &cancellables)
     }
 
-    func refreshMenu() {
+    public func refreshMenu() {
         guard let menu = statusItem.menu else { return }
         menu.removeAllItems()
 
@@ -82,7 +82,7 @@ class StatusBarController {
         menu.addItem(quitItem)
     }
 
-    func setShortcutActive(_ active: Bool) {
+    public func setShortcutActive(_ active: Bool) {
         shortcutActive = active
         refreshMenu()
     }
@@ -99,7 +99,7 @@ class StatusBarController {
         }
     }
 
-    @objc func togglePanel() {
+    @objc public func togglePanel() {
         if historyPanel == nil {
             historyPanel = HistoryPanel(store: store)
         }

@@ -1,4 +1,5 @@
 import AppKit
+import pastepCore
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     private var historyStore: HistoryStore!

@@ -1,13 +1,13 @@
 import AppKit
 import SwiftUI
 
-class HistoryPanel {
+public class HistoryPanel {
     private let panel: NSPanel
     private let store: HistoryStore
     private var previousApp: NSRunningApplication?
     private var outsideClickMonitor: Any?
 
-    init(store: HistoryStore) {
+    public init(store: HistoryStore) {
         self.store = store
 
         panel = NSPanel(
@@ -56,7 +56,7 @@ class HistoryPanel {
         }
     }
 
-    func toggle() {
+    public func toggle() {
         if panel.isVisible {
             hide()
         } else {
@@ -102,7 +102,7 @@ class HistoryPanel {
     }
 }
 
-func performPaste() {
+public func performPaste() {
     let src = CGEventSource(stateID: .hidSystemState)
     let down = CGEvent(keyboardEventSource: src, virtualKey: 0x09, keyDown: true)
     down?.flags = .maskCommand

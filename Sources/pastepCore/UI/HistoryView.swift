@@ -1,12 +1,18 @@
 import SwiftUI
 import AppKit
 
-struct HistoryView: View {
-    @ObservedObject var store: HistoryStore
-    let onClose: () -> Void
-    let onSelect: (ClipboardEntry) -> Void
+public struct HistoryView: View {
+    @ObservedObject public var store: HistoryStore
+    public let onClose: () -> Void
+    public let onSelect: (ClipboardEntry) -> Void
 
-    var body: some View {
+    public init(store: HistoryStore, onClose: @escaping () -> Void, onSelect: @escaping (ClipboardEntry) -> Void) {
+        self.store = store
+        self.onClose = onClose
+        self.onSelect = onSelect
+    }
+
+    public var body: some View {
         VStack(spacing: 0) {
             if store.entries.isEmpty {
                 Text("クリップボード履歴はありません")
@@ -35,10 +41,14 @@ struct HistoryView: View {
     }
 }
 
-struct EntryRowView: View {
-    let entry: ClipboardEntry
+public struct EntryRowView: View {
+    public let entry: ClipboardEntry
 
-    var body: some View {
+    public init(entry: ClipboardEntry) {
+        self.entry = entry
+    }
+
+    public var body: some View {
         HStack {
             Text(entry.preview)
                 .lineLimit(1)
