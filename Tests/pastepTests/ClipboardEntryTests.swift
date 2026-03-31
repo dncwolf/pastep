@@ -10,8 +10,8 @@ import Foundation
     }
 
     @Test func preview_longText() {
-        let entry = ClipboardEntry(content: "12345678901234567890EXTRA", type: .text)
-        #expect(entry.preview == "12345678901234567890")
+        let entry = ClipboardEntry(content: String(repeating: "a", count: 60), type: .text)
+        #expect(entry.preview == String(repeating: "a", count: 50))
     }
 
     @Test func preview_multiline() {

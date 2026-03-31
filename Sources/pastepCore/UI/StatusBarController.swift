@@ -37,8 +37,14 @@ public class StatusBarController {
             menu.addItem(item)
         } else {
             for entry in store.entries {
+                let menuTitle: String
+                if entry.type == .filePath {
+                    menuTitle = entry.preview
+                } else {
+                    menuTitle = String(entry.content.replacingOccurrences(of: "\n", with: " ").prefix(25))
+                }
                 let item = NSMenuItem(
-                    title: entry.preview,
+                    title: menuTitle,
                     action: #selector(entryClicked(_:)),
                     keyEquivalent: ""
                 )

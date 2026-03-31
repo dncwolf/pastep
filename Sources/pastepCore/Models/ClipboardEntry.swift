@@ -26,6 +26,6 @@ public struct ClipboardEntry: Codable, Identifiable, Equatable {
         if type == .filePath {
             return URL(fileURLWithPath: content).lastPathComponent
         }
-        return String(content.replacingOccurrences(of: "\n", with: " ").prefix(20))
+        return String(content.replacingOccurrences(of: "\n", with: " ").prefix(50))
     }
 }
