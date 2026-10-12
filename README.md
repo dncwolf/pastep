@@ -41,11 +41,15 @@ make clean
 
 ## 構成
 
-| モジュール | 役割 |
+`Sources/pastep` の1ターゲットのみ。
+
+| ファイル | 役割 |
 |------|------|
-| `pastepCore` | Foundation のみ。履歴・保存・監視・ペースト手順・メニュー内容 |
-| `pastepMac` | AppKit / Carbon / CoreGraphics のアダプタ（NSPasteboard, NSMenu, ホットキー, ⌘V 送信） |
-| `pastep` | 起動と組み立て |
+| `AppDelegate.swift` | 起動・メニューバーアイコン・クリップボード監視 |
+| `ClipboardEntry.swift` | 履歴の1件と表示用タイトル、NSPasteboard の読み書き |
+| `History.swift` | 履歴の追加と JSON ファイルへの保存（旧 UserDefaults からの移行を含む） |
+| `MenuController.swift` | 履歴メニューと選択時のペースト（⌘V 送信） |
+| `HotKey.swift` | ⌘⇧V のグローバルショートカット |
 
 ## スコープ外
 

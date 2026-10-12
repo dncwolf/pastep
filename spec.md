@@ -25,7 +25,7 @@ macOSのメニューバーに常駐するクリップボード履歴管理アプ
 - アプリ終了・再起動後も履歴を維持（`~/Library/Application Support/pastep/history.json`、パーミッション 600）
   - 変更から1秒まとめて書き込み、終了時にも書き出す
   - 旧バージョンの `UserDefaults`（`clipboard_history`）のデータは初回起動時にファイルへ移行
-- 各エントリに保存するデータ：内容・種別（text / filePath）・コピー日時
+- 各エントリに保存するデータ：内容・種別（text / filePath）。旧形式の id・コピー日時は読み込み時に無視する
 
 ### 3. メニューバー常駐
 
@@ -78,11 +78,9 @@ macOSのメニューバーに常駐するクリップボード履歴管理アプ
 ## データ構造
 
 ```swift
-struct ClipboardEntry: Codable {
-    let id: UUID
+struct ClipboardEntry: Codable, Equatable {
     let content: String       // テキスト本文 or ファイルパス文字列
     let type: EntryType       // .text / .filePath
-    let createdAt: Date
 }
 
 enum EntryType: String, Codable {
