@@ -1,30 +1,43 @@
 import AppKit
 import pastepCore
+import pastepMac
 
-class AppDelegate: NSObject, NSApplicationDelegate {
-    private var historyStore: HistoryStore!
-    private var clipboardMonitor: ClipboardMonitor!
-    private var statusBarController: StatusBarController!
-    private var globalShortcutManager: GlobalShortcutManager!
+final class AppDelegate: NSObject, NSApplicationDelegate {
+    private var store: HistoryStore!
+    private var watcher: ClipboardWatcher!
+    private var menuController: MenuController!
+    private var hotKey: HotKey?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        historyStore = HistoryStore()
-        clipboardMonitor = ClipboardMonitor(store: historyStore)
-        statusBarController = StatusBarController(store: historyStore)
-        globalShortcutManager = GlobalShortcutManager { [weak self] in
-            self?.statusBarController.togglePanel()
-        }
-        globalShortcutManager.onStatusChange = { [weak self] active in
-            DispatchQueue.main.async {
-                self?.statusBarController.setShortcutActive(active)
-            }
-        }
+        let persistence = FileHistoryPersistence(
+            fileURL: FileHistoryPersistence.defaultFileURL(),
+            legacyDefaults: .standard
+        )
+        store = HistoryStore(persistence: persistence)
 
-        clipboardMonitor.start()
-        globalShortcutManager.start()
+        let pasteboard = SystemPasteboard()
+        watcher = ClipboardWatcher(pasteboard: pasteboard, store: store)
+
+        let system = MacPasteSystem(pasteboard: pasteboard)
+        menuController = MenuController(
+            store: store,
+            system: system,
+            coordinator: PasteCoordinator(system: system)
+        )
+
+        let shortcut = HotKey.commandShiftV
+        hotKey = HotKey(keyCode: shortcut.keyCode, modifiers: shortcut.modifiers) { [weak self] in
+            // ホットキーのイベント処理中にメニューのトラッキングを始めないよう次のループで開く
+            DispatchQueue.main.async { self?.menuController.popUpAtCursor() }
+        }
+        menuController.hotKeyRegistered = hotKey != nil
+
+        watcher.start()
+        MacPasteSystem.requestAccessibilityIfNeeded()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
-        clipboardMonitor.stop()
+        watcher.stop()
+        store.flush()
     }
 }
