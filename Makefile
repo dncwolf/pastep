@@ -2,7 +2,7 @@ APP_NAME = pastep
 BUNDLE   = $(APP_NAME).app
 BINARY   = .build/arm64-apple-macosx/release/$(APP_NAME)
 
-.PHONY: build app run clean
+.PHONY: build app run test clean
 
 build:
 	swift build -c release --arch arm64
@@ -16,6 +16,9 @@ app: build
 
 run: app
 	open $(BUNDLE)
+
+test:
+	swift test
 
 clean:
 	rm -rf .build $(BUNDLE)
